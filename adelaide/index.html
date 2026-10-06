@@ -230,6 +230,79 @@ input,select,textarea{background:var(--surface-2);color:var(--ink);border-color:
 </style>
 </head>
 <body>
+<style>
+/* team lead to-do */
+.todo{display:grid;gap:14px}
+.todo[hidden]{display:none}
+.todo .thead{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-start;justify-content:space-between}
+.todo .ttl{min-width:0;flex:1 1 300px}
+.twk{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.twb{width:34px;height:34px;border:1px solid var(--line);background:var(--surface-2);border-radius:8px;cursor:pointer;display:grid;place-items:center;color:var(--ink);padding:0}
+.twb:hover:not(:disabled){border-color:var(--accent)}
+.twb:disabled{opacity:.35;cursor:default}
+.twl{display:grid;gap:2px;min-width:140px;text-align:center}
+.twl b{font:700 14px/1.1 var(--f-cond);letter-spacing:.1em;text-transform:uppercase}
+.twl span{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.twnow{border:0;background:none;color:var(--accent);font-weight:600;font-size:12.5px;cursor:pointer;padding:4px 2px}
+.tnote{font-size:12.5px;color:var(--warn);background:var(--warn-bg);border-radius:8px;padding:8px 12px}
+.tnote.quiet{color:var(--muted);background:var(--surface-2)}
+.tprog{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"n seg left";gap:16px;align-items:center;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px 16px}
+.tpn{grid-area:n;display:flex;align-items:baseline;gap:6px}
+.tpn b{font:800 30px/1 var(--f-display);font-stretch:112%;font-variant-numeric:tabular-nums}
+.tpn span{font-size:13px;color:var(--muted);white-space:nowrap}
+.tprog .tseg{grid-area:seg;height:12px}
+.tleft{grid-area:left;font-weight:600;font-size:13.5px;color:var(--ink-2);white-space:nowrap}
+.tprog.all .tleft{color:var(--good)}
+@media (max-width:620px){.tprog{grid-template-columns:auto 1fr;grid-template-areas:"n left" "seg seg";gap:10px 12px}.tleft{text-align:right}}
+.tseg{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:3px;height:8px}
+.tseg i{background:var(--grid);border-radius:3px;box-shadow:inset 0 0 0 1px var(--line)}
+.tseg i.on{background:var(--accent);box-shadow:none}
+.tdays{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-items:start}
+@media (max-width:1100px){.tdays{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:620px){.tdays{grid-template-columns:minmax(0,1fr)}}
+.tday{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:10px;min-width:0}
+.tday.st-today{border-color:var(--accent);box-shadow:inset 0 3px 0 var(--accent)}
+.tday header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.tdl{font:700 16px/1.1 var(--f-cond);letter-spacing:.1em;text-transform:uppercase}
+.tdd{font-size:12px;color:var(--muted);margin-top:3px}
+.tpill,.tmini{font:700 11px/1 var(--f-cond);letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:5px 8px;white-space:nowrap;color:var(--muted);box-shadow:inset 0 0 0 1px var(--line)}
+.st-done>header .tpill,.tmini.st-done{color:var(--good);background:var(--good-bg);box-shadow:none}
+.st-today>header .tpill,.tmini.st-today{color:var(--accent-ink);background:var(--accent);box-shadow:none}
+.st-overdue>header .tpill,.st-missed>header .tpill,.tmini.st-overdue,.tmini.st-missed{color:var(--warn);background:var(--warn-bg);box-shadow:none}
+.tbrief{margin:0;font-size:13px;line-height:1.5;color:var(--ink-2);padding-left:10px;border-left:2px solid var(--line)}
+.tbrief b{color:var(--ink);font-weight:600}
+.tlist{list-style:none;margin:0;padding:0;display:grid;gap:1px}
+.titem{display:grid;grid-template-columns:22px minmax(0,1fr);gap:10px;align-items:start;padding:7px 6px;margin-inline:-6px;border-radius:7px}
+.titem:hover{background:var(--surface)}
+.titem input{appearance:none;-webkit-appearance:none;margin:0;width:22px;height:22px;border:2px solid var(--ink-2);border-radius:6px;background:transparent;cursor:pointer;display:grid;place-items:center;transition:background .12s,border-color .12s}
+.titem input::after{content:"";width:6px;height:11px;border:solid var(--accent-ink);border-width:0 2.5px 2.5px 0;transform:translate(0,-1px) rotate(45deg);opacity:0}
+.titem input:checked{background:var(--accent);border-color:var(--accent)}
+.titem input:checked::after{opacity:1}
+.titem input:disabled{cursor:default;opacity:.5}
+.titem label{cursor:pointer;font-size:13.5px;font-weight:500;color:var(--ink);line-height:1.35;padding-top:1px;min-width:0;overflow-wrap:anywhere}
+.titem.on .tt{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--muted)}
+.titem small{display:block;font-size:11.5px;font-weight:400;color:var(--muted);margin-top:2px}
+.tout{display:flex;justify-content:space-between;align-items:center;gap:6px 10px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-2);border-top:1px dashed var(--line);padding-top:10px}
+.tout b{color:var(--ink);font-variant-numeric:tabular-nums}
+.tout span{min-width:0;flex:1 1 160px}
+.tfield{display:grid;gap:5px;border-top:1px dashed var(--line);padding-top:10px}
+.tfield label{font:600 12px/1.2 var(--f-cond);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.todo .tfield textarea{width:100%;min-height:70px;resize:vertical;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;line-height:1.45;color:var(--ink)}
+.todo .tfield textarea:focus{border-color:var(--accent)}
+.tsaved{font-size:11.5px;color:var(--muted);min-height:1em}
+.tfn{font-size:12px;color:var(--muted)}
+.tteams{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.ttcard{border:1px solid var(--line);background:var(--surface-2);border-radius:10px;padding:14px;text-align:left;color:var(--ink);cursor:pointer;display:grid;gap:10px;font:inherit;min-width:0}
+.ttcard:hover{border-color:var(--accent)}
+.ttcard:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.ttn{font:700 14px/1 var(--f-cond);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+.ttb{font:800 30px/1 var(--f-display);font-stretch:112%;font-variant-numeric:tabular-nums}
+.ttb small{font:500 13px var(--f-body);color:var(--muted);margin-left:6px;font-stretch:normal}
+.tminis{display:flex;gap:4px;flex-wrap:wrap}
+.tmini{border-radius:4px;padding:4px 6px;font-size:10.5px}
+.tnext{font-size:12.5px;color:var(--ink-2)}
+</style>
+
 <div class="wrap">
   <header class="top">
     <div class="brand">
@@ -242,9 +315,9 @@ input,select,textarea{background:var(--surface-2);color:var(--ink);border-color:
     <div class="fresh" id="fresh"></div>
   </header>
 
-  <section class="panel lock" id="lock" aria-label="Contact details"></section>
-
   <section class="stats" id="stats" aria-label="Summary"></section>
+
+  <section class="panel todo" id="todo" aria-labelledby="todo-h"></section>
 
   <section class="overview">
     <div class="panel chartp">
@@ -294,11 +367,11 @@ input,select,textarea{background:var(--surface-2);color:var(--ink);border-color:
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script id="pub" type="application/json">{"city":"Adelaide","city_key":"adelaide","lb_path":"/dg-promoters/adelaide/","link_base":"https://megatix.com.au/events/dangerous-goods-xxl-festival-adelaide-2027?discount=","codes_sheet":"ADELAIDE JANUARY 2027 PROMOTER CODES","weekly_sheet":"ADELAIDE PROMOTER SALES","built":"30 Sep 2026","roster_count":89,"nosales_count":61,"snapshot":{"generated":"Wed 30 Sep, 3:06pm (Melbourne time)","today":"2026-09-30","alias":{"KIMDG":"KIM5"},"weeks":[{"key":"2026-06-29","end":"29 Jun","label":"Mon 22 – Mon 29 Jun"},{"key":"2026-07-06","end":"6 Jul","label":"Mon 29 Jun – Mon 6 Jul"},{"key":"2026-07-13","end":"13 Jul","label":"Mon 6 – Mon 13 Jul"},{"key":"2026-07-20","end":"20 Jul","label":"Mon 13 – Mon 20 Jul"},{"key":"2026-07-27","end":"27 Jul","label":"Mon 20 – Mon 27 Jul"},{"key":"2026-08-03","end":"3 Aug","label":"Mon 27 Jul – Mon 3 Aug"},{"key":"2026-08-10","end":"10 Aug","label":"Mon 3 – Mon 10 Aug"},{"key":"2026-08-17","end":"17 Aug","label":"Mon 10 – Mon 17 Aug"},{"key":"2026-08-24","end":"24 Aug","label":"Mon 17 – Mon 24 Aug"},{"key":"2026-08-31","end":"31 Aug","label":"Mon 24 – Mon 31 Aug"},{"key":"2026-09-07","end":"7 Sep","label":"Mon 31 Aug – Mon 7 Sep"},{"key":"2026-09-14","end":"14 Sep","label":"Mon 7 – Mon 14 Sep"},{"key":"2026-09-21","end":"21 Sep","label":"Mon 14 – Mon 21 Sep"},{"key":"2026-09-28","end":"28 Sep","label":"Mon 21 – Mon 28 Sep"},{"key":"2026-10-05","end":"5 Oct","label":"Mon 28 Sep – Mon 5 Oct"}],"promoters":[{"code":"BEKKDG","weekly":[0,0,0,1,5,4,3,0,0,2,2,2,8,10,0],"total":37,"last":"2026-09-27"},{"code":"STEPHCM5","weekly":[0,0,7,1,7,1,0,0,0,2,2,9,2,2,2],"total":35,"last":"2026-09-28"},{"code":"TOBYDJ","weekly":[0,0,0,0,8,0,0,0,0,0,2,2,0,0,0],"total":12,"last":"2026-09-10"},{"code":"STARRETVDG","weekly":[0,0,0,8,0,0,2,0,0,0,0,0,1,0,0],"total":11,"last":"2026-09-16"},{"code":"DOMINICPR","weekly":[0,0,6,0,2,1,0,0,0,0,0,0,0,0,0],"total":9,"last":"2026-07-29"},{"code":"SHARNAHJAYYDG","weekly":[0,0,3,0,0,0,0,0,0,0,0,0,0,0,0],"total":8,"last":"2026-07-07"},{"code":"DESILVADG","weekly":[0,0,0,6,0,0,0,0,0,0,0,0,0,0,0],"total":6,"last":"2026-07-17"},{"code":"KENDG","weekly":[0,0,0,6,0,0,0,0,0,0,0,0,0,0,0],"total":6,"last":"2026-07-14"},{"code":"SHANAEDG","weekly":[0,0,4,0,0,0,0,0,2,0,0,0,0,0,0],"total":6,"last":"2026-08-21"},{"code":"BENNYDG","weekly":[0,0,0,0,0,3,1,0,0,0,0,0,0,0,0],"total":4,"last":"2026-08-03"},{"code":"FLIPPIXIEDG","weekly":[0,0,3,0,0,0,1,0,0,0,0,0,0,0,0],"total":4,"last":"2026-08-03"},{"code":"LUCYDG","weekly":[0,0,0,0,0,0,0,0,0,1,0,0,0,3,0],"total":4,"last":"2026-09-24"},{"code":"SIDNEYDG","weekly":[0,0,4,0,0,0,0,0,0,0,0,0,0,0,0],"total":4,"last":"2026-07-07"},{"code":"CELINAPR","weekly":[0,0,0,2,0,1,0,0,0,0,0,0,0,0,0],"total":3,"last":"2026-07-29"},{"code":"DGXXXLSDG","weekly":[0,0,0,0,3,0,0,0,0,0,0,0,0,0,0],"total":3,"last":"2026-07-23"},{"code":"NATALIEXOXDG","weekly":[0,0,3,0,0,0,0,0,0,0,0,0,0,0,0],"total":3,"last":"2026-07-07"},{"code":"RAVEDG","weekly":[0,0,0,0,3,0,0,0,0,0,0,0,0,0,0],"total":3,"last":"2026-07-22"},{"code":"BLANGADG","weekly":[0,0,0,0,0,0,0,0,0,0,0,0,2,0,0],"total":2,"last":"2026-09-14"},{"code":"DENNISEDG","weekly":[0,0,1,0,0,1,0,0,0,0,0,0,0,0,0],"total":2,"last":"2026-07-31"},{"code":"INDIDG","weekly":[0,0,0,0,0,0,0,0,0,2,0,0,0,0,0],"total":2,"last":"2026-08-28"},{"code":"ACCESS5","weekly":[0,0,0,0,0,1,0,0,0,0,0,0,0,0,0],"total":1,"last":"2026-07-31"},{"code":"BENNYDJ","weekly":[0,0,0,0,0,0,0,0,0,0,0,0,1,0,0],"total":1,"last":"2026-09-16"},{"code":"GREYWOLFDG","weekly":[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0],"total":1,"last":"2026-08-06"},{"code":"HARTTDJ","weekly":[0,0,1,0,0,0,0,0,0,0,0,0,0,0,0],"total":1,"last":"2026-07-07"},{"code":"ISZIKATEDG","weekly":[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0],"total":1,"last":"2026-08-05"},{"code":"JAYVEEDJ","weekly":[0,0,1,0,0,0,0,0,0,0,0,0,0,0,0],"total":1,"last":"2026-07-09"},{"code":"KFOXXYDG","weekly":[0,0,0,0,1,0,0,0,0,0,0,0,0,0,0],"total":1,"last":"2026-07-22"},{"code":"WILLPOWERDJ","weekly":[0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],"total":1,"last":"2026-07-14"}]}}</script>
-<script id="locked" type="application/json">{"v":1,"iter":600000,"salt":"EWNlhX/8pTNpbiGpqES2Tw==","iv":"hOWyaCkwutydebjW","ct":"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"}</script>
+<script id="roster" type="application/json">{"roster":[{"code":"APRIZZYDG","name":"Sriyeash Gupta","ig":"aprizzylol","phone":"0478 479 012","email":"sriyeash1@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"HARSHIRDG","name":"Harshi Rathaur","ig":"Harshi_2401","phone":"0466 330 340","email":"Harshi.singh.r.7@outlook.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"SHANAEDG","name":"Shanae Dowling","ig":"shanae.curyer","phone":"0421 796 730","email":"shanaecuryer28@yahoo.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"AALIYAHMDG","name":"Aaliyah Monteiro","ig":"aaliyah_monteiro","phone":"0405 811 132","email":"aaliyahmonteirox@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"SGRXNDDG","name":"Stella Grund","ig":"S_.grxnd","phone":"0450 953 858","email":"S.ivy.g06@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"KZOMBOIDDG","name":"Kayla Hamilton","ig":"kaylazomboid","phone":"0416 577 197","email":"noisenvisuals@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"SHARNAHJAYYDG","name":"Sharnnah Larvin","ig":"Sharnahjayy","phone":"0466 195 687","email":"Theoeacefulhomemaker@outlook.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"STARRETVDG","name":"Victoria Stárre","ig":"starre.tv & @victoriastarre","phone":"0431 760 435","email":"admin@starre.tv","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"DGWITHTOMDG","name":"Tom Tollenaar","ig":"getshotphotography","phone":"0434 067 073","email":"Tom@getshotphotography.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"DENNISEDG","name":"Dionysia Bacolas","ig":"Dionysia_b","phone":"0406 861 259","email":"Unitedinstrengthcoaching@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"INSANITYDG","name":"Destiny Brackstone","ig":"lotsofinsanity","phone":"0411 579 617","email":"destinyrain.b@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"JAMIEDG","name":"Jamie Darrington","ig":"jamiedarrington","phone":"0405 551 062","email":"jdarrington_29@hotmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"KENDG","name":"Ken Mak","ig":"ken.mak8","phone":"0434 989 292","email":"makjinken@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"PHXEBEDG","name":"Phoebe","ig":"Phoebe Thomas","phone":"0409 274 015","email":"Phoebe.r.thomas@outlook.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"DARNADG","name":"Darna Centofanti","ig":"darna.centofanti","phone":"0401 383 660","email":"jordarna410@outlook.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"LENAPM20DG","name":"Adelina Mulyana","ig":"adxlina._","phone":"0426 231 657","email":"luxclow@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"DG2026DG","name":"Ummay Navela Chowdhury","ig":"cga_nabs","phone":"0406 279 310","email":"ummayc626618@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"GREYWOLFDG","name":"Aaron Dickson","ig":"grey_wolf_tattoo","phone":"0402 455 477","email":"Thefatsparrow@outlook.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"KERRMINATORDG","name":"Christopher Kerr","ig":"dj.kerrminator","phone":"0468 357 059","email":"kerr_cg05@icloud.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"JADEDG","name":"Jade Harris","ig":"Jade.harris7","phone":"0402 366 896","email":"Jadeharris13@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":["Same person also has code(s): JADE7DG"]},{"code":"DGXXXLSDG","name":"Saman Nepal","ig":"sam_glitch1","phone":"0444 511 117","email":"samannepal8@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"DOMINICPR","name":"Dominic Gooden","ig":"domgoodenn","phone":"0405 722 519","email":"domgooden1@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"BDDG","name":"Rebecca Daish","ig":"beckyid_","phone":"0498 197 718","email":"Beckydaish@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"LAURENDG","name":"Lauren Stephenson","ig":"Laurennstephenson_","phone":"0438 970 470","email":"Laurenstep03@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"RUBYDG","name":"Ruby Manu","ig":"rubymanukonga","phone":"0473 667 707","email":"rubymanu67@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"ELENADG","name":"Elena","ig":"elenachristianos","phone":"0478 007 700","email":"elenatoskas@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"FLIPPIXIEDG","name":"Felicity Brimson","ig":"Flip Pixie","phone":"0448 496 328","email":"F.brimson@hotmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"BREEXODG","name":"Breeannah Jones","ig":"breefinlay.xo","phone":"0408 102 117","email":"Breefin1712@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"BRONGDG","name":"Bryant Jacob Ong","ig":"Ngobryant","phone":"0415 090 905","email":"Brong00005@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"NATALIEXOXDG","name":"Natalie Harvey","ig":"natalie.harveyyy","phone":"0422 676 864","email":"natalielynharvey@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"NAOMIDG","name":"Naomi","ig":"Naomitrestrail838","phone":"0488 264 925","email":"naomitrestrail838@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"TAYDG","name":"Taylah Ireland","ig":"taylah.shae","phone":"0414 597 215","email":"taylahshae26@outlook.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"CONNORDG","name":"Connor Wrightson","ig":"Connor_wrightson","phone":"0452 225 787","email":"cwrightson69@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"COOPERDG","name":"Cooper Pearson","ig":"cooper.pearson28","phone":"0412 255 125","email":"cooperpearson28@hotmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"ELIZADG","name":"Eliza Parker","ig":"elizagoesraving","phone":"0410 050 750","email":"Elizaparker13@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"CELINAPR","name":"Celina Nittmann","ig":"Celina.taylor22","phone":"0473 420 180","email":"Celina2003@live.com.au","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"HOWIEPR","name":"","ig":"howieaus","phone":"","email":"","contact_level":"Instagram only","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"PEACHDG","name":"","ig":"peachclub","phone":"","email":"","contact_level":"Instagram only","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"SIDNEYDG","name":"Sidney Pearse","ig":"sidney_pearse","phone":"0401 012 221","email":"sidney.pearse@outlook.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":["Listed 2x in codes sheet"]},{"code":"AMANDADG","name":"Amanda Gesovski","ig":"x_only_amanda_x","phone":"0416 199 418","email":"amandag89@y7mail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"LUCYDG","name":"Lucy McCallum","ig":"lucy.mccalllum","phone":"0498 468 297","email":"lmccallum2004@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"JADE7DG","name":"Jade Harris","ig":"Jade.harris7","phone":"0402 366 896","email":"Jadeharris13@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":["Same person also has code(s): JADEDG"]},{"code":"MAKAYLADG","name":"Makayla Stockman","ig":"makaylastockmann","phone":"0415 852 239","email":"makaylastockmann@outlook.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"MONGDG","name":"Monique Gould","ig":"mon_g_1993","phone":"0427 186 177","email":"moniquegould13@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"ZC27DG","name":"Zachary Caminiti","ig":"Zac.Caminiti","phone":"0420 446 024","email":"Kawzacki@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"BENNYDG","name":"Ben Egan","ig":"Benegan85","phone":"0413 349 113","email":"Benegan85@hotmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"MADDY26DG","name":"Madalyn Hollis","ig":"Madalyn.h20","phone":"0413 147 673","email":"Maddyh0208@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"RAVEDG","name":"Alison Cliff","ig":"Xoalisoncliffxo","phone":"0418 722 989","email":"Alisoncliff05@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"KFOXXYDG","name":"Chloe Retsas","ig":"Khloe_foxx","phone":"0491 341 445","email":"Chloe47182@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"BEKKDG","name":"Rebekka Meyers","ig":"Vip.aus","phone":"0458 408 718","email":"Rebekka.jayde","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":["Email looks invalid (Rebekka.jayde)"]},{"code":"MONTYDG","name":"Montana Kirvan","ig":"montanak_4201","phone":"0401 482 109","email":"mkirvan2006@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"RAGEDG","name":"Leon Winter","ig":"ljay_da_dj","phone":"0434 941 535","email":"lw25391@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"NIKKIDG","name":"Nikki Leung","ig":"y25x0","phone":"0450 729 167","email":"yau0327ty@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"HAYESDG","name":"Michael William Hayes","ig":"miwiha89","phone":"0424 371 091","email":"miwiha89@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"LILAHDG","name":"Lilah Thompson","ig":"lilahhthompson","phone":"0410 136 277","email":"lilahthompson73@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"CROCK6DG","name":"Angus","ig":"Anguscrockford_","phone":"0412 389 563","email":"Angus.crockford1@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"KITTENDG","name":"Melanie Bullock","ig":"hellomellojello29","phone":"0468 495 595","email":"mel.bullock80@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"MARKNUDG","name":"Mark Ferguson","ig":"mf294102","phone":"0412 110 516","email":"marknu75@hotmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"CLARISSADG","name":"Clarissa Ryan","ig":"amethystjinx","phone":"0451 987 494","email":"clarissaryan@icloud.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"BAILEYDG","name":"Bailey Bryce-D’Mello","ig":"Baileyb2432","phone":"0434 830 650","email":"Baileyb2432@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":["Listed 2x in codes sheet"]},{"code":"ISZIKATEDG","name":"Isobel Fabray","ig":"Iszikate","phone":"0415 548 916","email":"iszifabray@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"EVOLUTIONDG","name":"Dan Tedge","ig":"dan_tedge","phone":"0415 481 412","email":"danieltedge@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"BOUNCYMEDG","name":"Julie Davis","ig":"Littlemissbouncy","phone":"0428 900 021","email":"Missjoolee@hotmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"BENNYDJ","name":"Ben Dixon","ig":"Bend9939","phone":"0466 445 539","email":"Bend9939@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":["Name and Instagram were in each other's columns in the codes sheet"]},{"code":"ANDREWDG","name":"Andrew Nguyen","ig":"andrew.van06","phone":"0432 291 447","email":"vnguy137@icloud.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"BELLABBYDG","name":"Gabriella Parkins","ig":"hardstylehousewife","phone":"0423 067 653","email":"gabriella.parkins01@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet; Sydney January 2027 Promoter Codes (same Instagram, code BELLABBYDG)","in_codes_sheet":true,"notes":[]},{"code":"RAPDG","name":"Russell Perez","ig":"Russell.perez01","phone":"047711174","email":"Russellangelo.perez2001@yahoo.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":["Phone looks incomplete (047711174) - check"]},{"code":"PK0NGDG","name":"Peter Kong","ig":"peter.k0ng","phone":"0491 620 171","email":"peterkong032@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"ISAAC1DG","name":"Isaac Taylor","ig":"X.ixaac1","phone":"0449 962 344","email":"Isaactaylor16@icloud.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"INDIDG","name":"Indianna Tardio","ig":"indi_tardio","phone":"0423 077 095","email":"tardioindi@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":["Name and Instagram were in each other's columns in the codes sheet"]},{"code":"MIMIDG","name":"Mishella Fraser","ig":"mimi_shawnette","phone":"0474 237 960","email":"mishellafraser2001@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":["Name and Instagram were in each other's columns in the codes sheet"]},{"code":"SASKDG","name":"Sask Cole","ig":"sask.cole","phone":"0460 890 478","email":"saskia-11@live.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":["Name and Instagram were in each other's columns in the codes sheet"]},{"code":"MSGAINSDG","name":"Kirra Hawley","ig":"msgainsdj","phone":"0411 846 497","email":"kirraptdj@msgains.com.au","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"BREESHAMDG","name":"Breesha McCann","ig":"mccannogram","phone":"0447 408 264","email":"breeshamccann@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"PHANTOMDG","name":"Joshua Robinson","ig":"hsu_Phantom","phone":"0466 597 289","email":"joshrobbo789@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"HANNADG","name":"Hanna Nielsen","ig":"Hannasholygrail","phone":"0478 116 077","email":"hannasholygrail@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"NICDG","name":"Nicole Begnell","ig":"Nic Begnell","phone":"0415 133 861","email":"nicolebegnell@hotmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"LEXDG","name":"Alexis Torrado","ig":"lexiianity","phone":"0431 845 095","email":"torradoalexis@yahoo.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"NIXTIXDG","name":"Nikkey Suriani","ig":"nikkey.suriani","phone":"0488 784 056","email":"n27857710@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"KETCHUPDG","name":"Ketchup Iris","ig":"Ketchupirismusic","phone":"0468 636 316","email":"Ketchupirismusic@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"BIORIDG","name":"Beore Hwang","ig":"biori.exe","phone":"0422 605 074","email":"biori.exe@gmail.com","contact_level":"Phone + email","contact_source":"Codes sheet","in_codes_sheet":true,"notes":[]},{"code":"STEPHCM5","name":"Steph McRoberts","ig":"","phone":"0452 247 171","email":"steph@ausfestpromotions.com.au","contact_level":"Phone + email","contact_source":"DG XXL PROMOTERS - STEPHCM (Steph's team list)","in_codes_sheet":false,"notes":["On the sales leaderboard but NOT in the ADELAIDE JANUARY 2027 PROMOTER CODES sheet"]},{"code":"TOBYDJ","name":"","ig":"","phone":"","email":"","contact_level":"None","contact_source":"","in_codes_sheet":false,"notes":["On the sales leaderboard but NOT in the ADELAIDE JANUARY 2027 PROMOTER CODES sheet"]},{"code":"DESILVADG","name":"","ig":"","phone":"","email":"","contact_level":"None","contact_source":"","in_codes_sheet":false,"notes":["On the sales leaderboard but NOT in the ADELAIDE JANUARY 2027 PROMOTER CODES sheet"]},{"code":"BLANGADG","name":"","ig":"","phone":"","email":"","contact_level":"None","contact_source":"","in_codes_sheet":false,"notes":["On the sales leaderboard but NOT in the ADELAIDE JANUARY 2027 PROMOTER CODES sheet"]},{"code":"ACCESS5","name":"Deni Hill","ig":"","phone":"0450 147 443","email":"denijanerobertson@gmail.com","contact_level":"Phone + email","contact_source":"DG XXL PROMOTERS - STEPHCM (Steph's team list)","in_codes_sheet":false,"notes":["On the sales leaderboard but NOT in the ADELAIDE JANUARY 2027 PROMOTER CODES sheet"]},{"code":"HARTTDJ","name":"","ig":"","phone":"","email":"","contact_level":"None","contact_source":"","in_codes_sheet":false,"notes":["On the sales leaderboard but NOT in the ADELAIDE JANUARY 2027 PROMOTER CODES sheet"]},{"code":"JAYVEEDJ","name":"","ig":"","phone":"","email":"","contact_level":"None","contact_source":"","in_codes_sheet":false,"notes":["On the sales leaderboard but NOT in the ADELAIDE JANUARY 2027 PROMOTER CODES sheet"]},{"code":"WILLPOWERDJ","name":"","ig":"","phone":"","email":"","contact_level":"None","contact_source":"","in_codes_sheet":false,"notes":["On the sales leaderboard but NOT in the ADELAIDE JANUARY 2027 PROMOTER CODES sheet"]}]}</script>
 <script>
 (function(){
 const PUB = JSON.parse(document.getElementById("pub").textContent);
-const LOCKED = JSON.parse(document.getElementById("locked").textContent);
+const OPEN = JSON.parse(document.getElementById("roster").textContent);
 const CITY = PUB.city, KEY = PUB.city_key;
 const SLABEL = {active:"Active",slowing:"Slowing",quiet:"Gone quiet",none:"No sales yet"};
 const STIP = {active:"Sold in the last 3 weeks",slowing:"Last sale 3–6 weeks ago",quiet:"No sale in 6+ weeks",none:"Code not on the sales leaderboard yet"};
@@ -346,33 +419,9 @@ async function loadLive(){
   compute(); render();
 }
 
-/* ---------- contacts: encrypted, opened with the team lead passcode ---------- */
-let ROSTER = null, unlocking = false, lockMsg = "";
-const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
-const norm = s => String(s || "").trim().toLowerCase().replace(/\s+/g, "-");
-async function openRoster(pass){
-  if (!(window.crypto && crypto.subtle)) throw new Error("nocrypto");
-  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(norm(pass)), "PBKDF2", false, ["deriveKey"]);
-  const key = await crypto.subtle.deriveKey({name:"PBKDF2", salt:b64(LOCKED.salt), iterations:LOCKED.iter, hash:"SHA-256"},
-    base, {name:"AES-GCM", length:256}, false, ["decrypt"]);
-  const pt = await crypto.subtle.decrypt({name:"AES-GCM", iv:b64(LOCKED.iv)}, key, b64(LOCKED.ct));
-  return JSON.parse(new TextDecoder().decode(pt));
-}
-async function unlock(pass, remember, quiet){
-  unlocking = true; lockMsg = ""; renderLock();
-  try {
-    ROSTER = await openRoster(pass);
-    if (remember) store.set(K_PASS, norm(pass)); else store.del(K_PASS);
-    lockMsg = ""; if (!quiet) toast("Contact details unlocked");
-    Object.assign(st, blank(), {view:"sold"}); syncControls();
-  } catch (e) {
-    ROSTER = null;
-    if (quiet) store.del(K_PASS);
-    else lockMsg = e && e.message === "nocrypto" ? "This browser can't unlock the page. Open the link in Chrome or Safari." : "That passcode didn't work. Check it and try again.";
-  }
-  unlocking = false; compute(); render();
-}
-function lockAgain(){ ROSTER = null; store.del(K_PASS); Object.assign(st, blank(), {view:"sold"}); syncControls(); compute(); render(); toast("Locked"); }
+/* ---------- contacts: in the page, no passcode (Lauren, 6 Oct 2026) ---------- */
+let ROSTER = OPEN.roster;
+store.del(K_PASS);
 
 /* ---------- outreach log: kept in this browser only ---------- */
 let outreach = {};
@@ -439,23 +488,7 @@ const st = {view:"sold", q:"", status:"any", contact:"any", out:"any", sort:"tic
 function blank(){ return {view:"all", q:"", status:"any", contact:"any", out:"any", sort:"tickets", preset:""}; }
 
 /* ---------- lock panel ---------- */
-function renderLock(){
-  const el = $("#lock");
-  if (ROSTER){
-    el.className = "panel lock open";
-    el.innerHTML = `<div class="lk-row"><div><h2>Contact details unlocked</h2><div class="hint">Names, phone numbers, emails and Instagram handles for ${PUB.roster_count} ${esc(CITY)} codes. Keep this page to yourself.</div></div><button class="clear" type="button" id="relock">Lock again</button></div>`;
-    $("#relock").onclick = lockAgain;
-    return;
-  }
-  el.className = "panel lock";
-  el.innerHTML = `<div class="lk-row"><div><h2>Contact details are locked</h2><div class="hint">Enter the team lead passcode to see names, phone numbers, emails and Instagram handles, and the ${PUB.nosales_count} codes with no sales yet. Sales numbers show without it.</div></div>
-    <form id="unlock" class="lk-form" autocomplete="off"><label class="sr" for="pass">Passcode</label>
-      <input type="password" id="pass" placeholder="Passcode" autocomplete="current-password" autocapitalize="off" spellcheck="false"${unlocking?" disabled":""}>
-      <label class="rem"><input type="checkbox" id="remember" checked> Remember on this device</label>
-      <button class="btn" type="submit"${unlocking?" disabled":""}>${unlocking?"Unlocking…":"Unlock"}</button></form></div>
-    ${lockMsg?`<div class="lk-msg" role="alert">${esc(lockMsg)}</div>`:""}`;
-  $("#unlock").onsubmit = e => { e.preventDefault(); const v = $("#pass").value; if (v.trim()) unlock(v, $("#remember").checked, false); };
-}
+function renderLock(){}
 
 /* ---------- header, stats, chart ---------- */
 function renderFresh(){
@@ -649,7 +682,7 @@ function render(){
   const ae = document.activeElement;
   if (ae && list.contains(ae) && (ae.tagName === "TEXTAREA" || ae.tagName === "SELECT")) { pendingRender = true; return; }
   pendingRender = false;
-  renderLock(); renderFresh(); renderSeg(); renderQuick(); renderStats(); renderChart(); renderChecks(); syncControls();
+  renderLock(); renderFresh(); renderSeg(); renderQuick(); renderStats(); renderChart(); renderChecks(); TODO.render(); syncControls();
   const rows = P.filter(p => match(p, st)).sort(sorter(st));
   const head = `<div class="lhead" aria-hidden="true"><div>Code · promoter</div><div>Tickets</div><div>Sales status</div><div>Contact</div><div>Outreach</div><div></div></div>`;
   list.innerHTML = head + (rows.length ? rows.map(rowHTML).join("") : `<div class="empty">No promoters match these filters. <button class="clear" type="button" data-reset>Reset filters</button></div>`);
@@ -683,10 +716,240 @@ $("#list").addEventListener("input", e => { const ta = e.target.closest("[data-n
 $("#foot").innerHTML = `<div><b>Made sales</b> means the code is on the ${esc(CITY)} promoter sales leaderboard. <b>Active</b> = sold in the last 3 weeks, <b>Slowing</b> = last sale 3 to 6 weeks ago, <b>Gone quiet</b> = no sale in 6+ weeks. Weeks run Monday to Monday.</div>
 <div>Sales come straight from the leaderboard each time the page opens, so they update whenever it does. Contact details come from the ${esc(PUB.codes_sheet)} sheet (saved ${esc(PUB.built)}), with gaps filled from other ${esc(CITY)} promoter lists. Outreach and notes are saved in this browser only.</div>`;
 
+/* ---------- team lead to-do ---------- */
+/* Ticks and notes are kept in this browser only (localStorage), keyed {team}_{weekMonday}_{item}. */
+const TODO = (() => {
+  const MULTI = false;
+  const TZ = "Australia/Adelaide";
+  const START = "2026-10-05";             // first week with a to-do list
+  const DAYS = [
+    {id:"mon", label:"Monday", short:"Mon", off:[0,0],
+      brief:"I'll let you know the focus for the week for your team messaging.",
+      items:[["m1","Get this week's focus from Lauren"]],
+      field:["focus","This week's focus","Who your team is messaging this week"]},
+    {id:"week", label:"During the week", short:"Week", off:[0,4],
+      brief:"Personally message the people in that week's focus group.",
+      items:[["w1","Personally message everyone in this week's focus group"]], outreach:true},
+    {id:"thu", label:"Thursday", short:"Thu", off:[3,3],
+      brief:"Weekly share post day. The share post goes out at 6pm AEST, so send it into your team's group chat and get everyone sharing it on their stories with their link or code. Please keep track of who is posting these somewhere too (get them to message you).",
+      items:[["t1","Send the share post into your team's group chat"],["t2","Get everyone sharing it on their stories with their link or code"],["t3","Keep track of who posts it (get them to message you)"]],
+      field:["shares","Who shared this week","One per line, e.g. @handle or CODE"]},
+    {id:"fri", label:"Friday", short:"Fri", off:[4,4],
+      brief:"Before you clock off for the weekend, send me a quick summary of your week:",
+      items:[["f1","How your week went"],["f2","Feedback from your individual messages"],["f3","Any blockers"],["f4","Your ideas for an incentive next week"],["f5","Any other thoughts"],["f6","Send Lauren your summary"]],
+      field:["summary","Draft your summary (optional)","Jot it down here, then send it to Lauren."]},
+  ];
+  const ITEMS = DAYS.flatMap(d => d.items.map(i => i[0]));
+  const LABEL = Object.fromEntries(DAYS.flatMap(d => d.items));
+  const N = ITEMS.length;
+  const SLAB = {done:"Done", today:"Today", overdue:"Overdue", upcoming:"Coming up", missed:"Not done"};
+  const chevL = `<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M9 3L5 7l4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const chevR = `<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M5 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+  let TW = null, follow = true, TD = {}, tPending = false, lastHTML = "", ptrDown = false;
+  const tdrafts = {}, tsaving = {};
+  const K_TODO = "dgtl-todo-" + KEY;
+  let canStore = true;
+  try { localStorage.setItem(K_TODO + "-t", "1"); localStorage.removeItem(K_TODO + "-t"); } catch { canStore = false; }
+  try { TD = JSON.parse(localStorage.getItem(K_TODO) || "{}") || {}; } catch { TD = {}; }
+  const iso = dt => dt.toISOString().slice(0,10);
+  function ago(t0){
+    const t = Date.parse(t0); if (!t) return "";
+    const s = (Date.now() - t) / 1000;
+    if (s < 90) return "just now";
+    if (s < 3600) return Math.round(s/60) + " min ago";
+    if (s < 86400) return Math.round(s/3600) + " h ago";
+    return dlong(iso(new Date(t)));
+  }
+
+  /* dates in the city's own time zone */
+  let fmt = null;
+  try { fmt = new Intl.DateTimeFormat("en-AU", {timeZone: TZ, year:"numeric", month:"2-digit", day:"2-digit"}); } catch {}
+  function localDate(t){
+    const d = t ? new Date(t) : new Date();
+    if (fmt){ try { const p = Object.fromEntries(fmt.formatToParts(d).map(x => [x.type, x.value])); if (p.year && p.month && p.day) return `${p.year}-${p.month}-${p.day}`; } catch {} }
+    return iso(new Date(d.getTime() + 10*3600e3));
+  }
+  const addDays = (s, n) => { const d = pd(s); d.setUTCDate(d.getUTCDate() + n); return iso(d); };
+  const mondayOf = s => addDays(s, -((pd(s).getUTCDay() + 6) % 7));
+  const thisWeek = () => mondayOf(localDate());
+  const teamKey = () => MULTI ? (TAB && TAB !== HOST ? "t" + TAB : null) : "team";
+  const docKey = (tm, wk, item) => `${tm}_${wk}_${item}`;
+  const rec = (tm, item) => TD[docKey(tm, TW, item)];
+  const isDone = (tm, item) => { const r = rec(tm, item); return !!(r && r.done); };
+  const doneCount = tm => ITEMS.filter(i => isDone(tm, i)).length;
+  const disabled = () => !canStore;
+
+  function dayState(tm, d){
+    if (d.items.every(([i]) => isDone(tm, i))) return "done";
+    const cw = thisWeek();
+    if (TW < cw) return "missed";
+    if (TW > cw) return "upcoming";
+    const dow = (pd(localDate()).getUTCDay() + 6) % 7;   // 0 = Monday … 6 = Sunday
+    if (dow < d.off[0]) return "upcoming";
+    if (dow <= d.off[1]) return "today";
+    return "overdue";
+  }
+  const stateLabel = (d, s) => s === "today" && d.id === "week" ? "This week" : SLAB[s];
+  function dateOf(d){
+    if (d.id === "week") return `Mon ${dshort(TW)} to Fri ${dshort(addDays(TW, 4))}`;
+    return dlong(addDays(TW, d.off[0]));
+  }
+  function loggedThisWeek(){
+    const end = addDays(TW, 7);
+    return P.filter(p => { const o = outreach[p.code]; if (!o || !o.status || !o.at) return false; const d = localDate(o.at); return d >= TW && d < end; }).length;
+  }
+
+  /* ---------- markup ---------- */
+  function weekNav(){
+    const cw = thisWeek();
+    const lbl = TW === cw ? "This week" : TW === addDays(cw, 7) ? "Next week" : TW === addDays(cw, -7) ? "Last week" : "Week of " + dshort(TW);
+    return `<div class="twk" role="group" aria-label="Choose a week">
+      <button type="button" class="twb" data-wk="-1"${TW > START ? "" : " disabled"} aria-label="Previous week">${chevL}</button>
+      <div class="twl" aria-live="polite"><b>${esc(lbl)}</b><span>Mon ${esc(dshort(TW))} to Sun ${esc(dshort(addDays(TW, 6)))}</span></div>
+      <button type="button" class="twb" data-wk="1"${TW < addDays(cw, 7) ? "" : " disabled"} aria-label="Next week">${chevR}</button>
+      ${TW !== cw ? `<button type="button" class="twnow" data-wk="0">Back to this week</button>` : ""}
+    </div>`;
+  }
+  function noteHTML(){
+    return canStore ? "" : `<div class="tnote">This browser isn't letting the page save, so ticks won't stick. Try opening the link in Chrome or Safari (not a private window).</div>`;
+  }
+  const segHTML = tm => `<div class="tseg" aria-hidden="true">${ITEMS.map(i => `<i class="${isDone(tm, i) ? "on" : ""}"></i>`).join("")}</div>`;
+  function fieldHTML(tm, f, dis){
+    const [item, label, ph] = f;
+    const k = docKey(tm, TW, item), r = TD[k];
+    const val = k in tdrafts ? tdrafts[k] : (r && r.text) || "";
+    const s = tsaving[k];
+    const status = s === "saving" ? "Saving…" : s === "err" ? "Not saved yet. Click away again to retry." : (r && r.text) ? `Saved on this device, ${ago(r.at)}` : (dis ? "" : "Saves on this device when you click away");
+    return `<div class="tfield"><label for="tf-${item}">${esc(label)}</label>
+      <textarea id="tf-${item}" data-field="${item}" data-doc="${esc(k)}" maxlength="2000" rows="3" placeholder="${esc(ph)}"${dis ? " disabled" : ""}>${esc(val)}</textarea>
+      <div class="tsaved">${esc(status)}</div></div>`;
+  }
+  function listHTML(tm){
+    const dis = disabled();
+    const done = doneCount(tm), left = N - done;
+    const title = MULTI ? `${GNAME(TAB)} to-do` : "Team lead to-do";
+    const cards = DAYS.map(d => {
+      const s = dayState(tm, d);
+      const items = d.items.map(([i, label]) => {
+        const r = rec(tm, i), on = !!(r && r.done);
+        return `<li class="titem${on ? " on" : ""}"><input type="checkbox" id="td-${i}" data-tick="${i}" data-doc="${esc(docKey(tm, TW, i))}"${on ? " checked" : ""}${dis ? " disabled" : ""}>
+          <label for="td-${i}"><span class="tt">${esc(label)}</span>${on ? `<small>Ticked ${esc(ago(r.at))}</small>` : ""}</label></li>`;
+      }).join("");
+      const brief = esc(d.brief).replace("6pm AEST", "<b>6pm AEST</b>");
+      let extra = "";
+      if (d.outreach){
+        const n = loggedThisWeek();
+        extra = `<div class="tout"><span>${n === null ? "Log each message in the Outreach column below." : `<b>${n}</b> ${n === 1 ? "promoter" : "promoters"} logged in Outreach on this device this week. Log each message there so you can see who you've done.`}</span><button type="button" class="clear" data-golist>Go to the list</button></div>`;
+      }
+      if (d.field) extra += fieldHTML(tm, d.field, dis);
+      return `<article class="tday st-${s}" aria-label="${esc(d.label)}: ${esc(stateLabel(d, s))}">
+        <header><div><div class="tdl">${esc(d.label)}</div><div class="tdd">${esc(dateOf(d))}</div></div><span class="tpill">${esc(stateLabel(d, s))}</span></header>
+        <p class="tbrief">${brief}</p>
+        <ul class="tlist">${items}</ul>${extra}</article>`;
+    }).join("");
+    return `<div class="thead"><div class="ttl"><h2 id="todo-h">${esc(title)}</h2><div class="hint">Your weekly jobs from Lauren. Tick each one off as you go. A fresh list starts every Monday.</div></div>${weekNav()}</div>
+      ${noteHTML()}
+      <div class="tprog${left ? "" : " all"}" role="img" aria-label="${done} of ${N} done">
+        <div class="tpn"><b>${done}</b><span>of ${N} done</span></div>${segHTML(tm)}
+        <div class="tleft">${left ? `${left} still to do` : "All done this week"}</div></div>
+      <div class="tdays">${cards}</div>
+      <div class="tfn">Ticks and notes are saved in this browser only, so use the same phone or computer each time. Lauren can't see them here, so still send her your Friday summary.</div>`;
+  }
+  function overviewHTML(){
+    const cards = TEAMS.map(t => {
+      const tm = "t" + t, done = doneCount(tm);
+      const next = DAYS.flatMap(d => d.items.filter(([i]) => !isDone(tm, i)).map(([, l]) => l))[0];
+      const minis = DAYS.map(d => { const s = dayState(tm, d); return `<span class="tmini st-${s}" title="${esc(d.label)}: ${esc(stateLabel(d, s))}">${esc(d.short)}</span>`; }).join("");
+      return `<button type="button" class="ttcard" data-team="${t}" aria-label="Open the Team ${t} to-do, ${done} of ${N} done">
+        <div class="ttn">Team ${t}</div><div class="ttb">${done}<small>of ${N} done</small></div>${segHTML(tm)}
+        <div class="tminis">${minis}</div>
+        <div class="tnext">${next ? `Next: ${esc(next)}` : "All done this week"}</div></button>`;
+    }).join("");
+    return `<div class="thead"><div class="ttl"><h2 id="todo-h">Team lead to-do</h2><div class="hint">Each team lead ticks off their own list on their team's tab. Ticks are saved on this device. Tap a team to open it.</div></div>${weekNav()}</div>
+      ${noteHTML()}<div class="tteams">${cards}</div>`;
+  }
+
+  /* ---------- render ---------- */
+  function render_(){
+    const el = $("#todo"); if (!el) return;
+    if (MULTI && TAB === HOST){ el.hidden = true; return; }
+    el.hidden = false;
+    const ae = document.activeElement;
+    if (ptrDown || (ae && el.contains(ae) && ae.tagName === "TEXTAREA")){ tPending = true; return; }
+    tPending = false;
+    if (!TW) TW = thisWeek();
+    const html = MULTI && !TAB ? overviewHTML() : listHTML(teamKey());
+    if (html !== lastHTML){
+      const fid = ae && el.contains(ae) ? ae.id : "";
+      el.innerHTML = html; lastHTML = html;
+      if (fid){ const f = document.getElementById(fid); if (f) f.focus(); }
+    }
+  }
+  /* ---------- data ---------- */
+  function setWeek(wk){
+    if (wk === TW) return;
+    TW = wk; follow = wk === thisWeek();
+    render_();
+  }
+  function write(k, body){
+    const prev = TD[k];
+    if (body) TD[k] = body; else delete TD[k];
+    try { localStorage.setItem(K_TODO, JSON.stringify(TD)); return Promise.resolve(true); }
+    catch {
+      if (prev) TD[k] = prev; else delete TD[k];
+      toast("Couldn't save on this device.");
+      return Promise.resolve(false);
+    }
+  }
+  async function tick(input){
+    const k = input.dataset.doc, item = input.dataset.tick, on = input.checked;
+    const [tm, wk] = k.split("_");
+    const ok = await write(k, on ? {team: tm, week: wk, item, done: true, at: new Date().toISOString()} : null);
+    if (!ok){ input.checked = !on; render_(); return; }
+    render_();
+    if (on && ITEMS.filter(i => i === item || isDone(tm, i)).length === N) toast("All " + N + " done this week. Nice work.");
+  }
+  async function saveField(ta){
+    const k = ta.dataset.doc, item = ta.dataset.field, text = ta.value.trim();
+    const r = TD[k], cur = (r && r.text) || "";
+    if (text === cur){ delete tdrafts[k]; delete tsaving[k]; return; }
+    const [tm, wk] = k.split("_");
+    tsaving[k] = "saving";
+    const ok = await write(k, text ? {team: tm, week: wk, item, text, at: new Date().toISOString()} : null);
+    tsaving[k] = ok ? "" : "err";
+    if (ok) delete tdrafts[k];
+    render_();
+  }
+
+  /* ---------- events ---------- */
+  const el = $("#todo");
+  el.addEventListener("click", e => {
+    const w = e.target.closest("[data-wk]");
+    if (w){ const n = +w.dataset.wk; setWeek(n === 0 ? thisWeek() : addDays(TW, 7 * n)); return; }
+    const t = e.target.closest("[data-team]");
+    if (t && MULTI){ setTab(+t.dataset.team); return; }
+    if (e.target.closest("[data-golist]")) document.querySelector(".roster").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start"});
+  });
+  el.addEventListener("change", e => {
+    const c = e.target.closest("[data-tick]"); if (c){ tick(c); return; }
+    const f = e.target.closest("[data-field]"); if (f) saveField(f);
+  });
+  el.addEventListener("input", e => { const f = e.target.closest("[data-field]"); if (f) tdrafts[f.dataset.doc] = f.value; });
+  el.addEventListener("focusout", () => { setTimeout(() => { if (tPending) render_(); }, 0); });
+  const up = () => { ptrDown = false; if (tPending) setTimeout(render_, 0); };
+  document.addEventListener("pointerdown", () => { ptrDown = true; }, true);
+  document.addEventListener("pointerup", up, true);
+  document.addEventListener("pointercancel", up, true);
+  // keep "Today" and "Overdue" right as the week goes on, and roll over to the new list on Monday
+  setInterval(() => { if (follow && TW && TW !== thisWeek()) setWeek(thisWeek()); else render_(); }, 5 * 60e3);
+
+  return {render: render_, start(){ if (!TW) TW = thisWeek(); render_(); }};
+})();
+
 /* ---------- boot ---------- */
 compute(); syncControls(); render();
-const saved = store.get(K_PASS);
-if (saved) unlock(saved, true, true);
+TODO.start();
 loadLive();
 })();
 </script>
