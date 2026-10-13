@@ -9,3 +9,7 @@ so they update whenever the leaderboards do. Promoter contact details are in eac
 Each page has a weekly team lead to-do list (Melbourne: one per team tab). Ticks, notes and outreach
 logged on these pages are saved in that browser only, so nobody else sees them. The Claude dashboards
 keep a shared version of the same list.
+
+The Friday card has a Send to Lauren button. It gathers that week's ticks, focus, who shared and the
+outreach logged on that device, and opens Lauren's Friday check-in Google Form with them filled in
+(answers land in the form's responses sheet). There's also a Copy button for sending it on Instagram.

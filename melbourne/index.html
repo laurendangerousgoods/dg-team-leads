@@ -269,6 +269,22 @@ input,select,textarea{background:var(--surface-2);color:var(--ink);border-color:
 </head>
 <body>
 <style>
+/* SEND-TO-LAUREN */
+.tsend{display:grid;gap:8px;border-top:1px dashed var(--line);padding-top:12px}
+.tsend .btn{justify-self:stretch;text-align:center;padding:10px 14px;font-size:14px}
+.tsend p{margin:0;font-size:12px;color:var(--muted)}
+.tsd{border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);padding:0;width:min(600px,calc(100vw - 24px));max-height:calc(100dvh - 32px);overflow:hidden}
+.tsd::backdrop{background:rgba(0,0,0,.6)}
+.tsd-in{display:grid;grid-template-rows:auto auto minmax(0,1fr) auto auto;gap:12px;padding:18px;max-height:calc(100dvh - 34px)}
+.tsd header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.tsd h2{font:800 18px/1.1 var(--f-display);font-stretch:112%;text-transform:uppercase}
+.tsd-p{margin:0;font-size:13.5px;color:var(--ink-2)}
+.tsd-pre{margin:0;min-height:120px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font:500 12.5px/1.5 var(--f-body);background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px}
+.tsd-act{display:flex;flex-wrap:wrap;gap:8px}
+.tsd-act .btn{text-decoration:none;display:inline-flex;align-items:center;justify-content:center;padding:10px 16px;font-size:14px;flex:1 1 200px}
+.tsd-sec{border:1px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:7px;padding:10px 16px;font-weight:600;cursor:pointer;flex:1 1 160px}
+.tsd-sec:hover{border-color:var(--accent)}
+.tsd-fn{margin:0;font-size:12px;color:var(--muted)}
 /* team lead to-do */
 .todo{display:grid;gap:14px}
 .todo[hidden]{display:none}
@@ -1012,6 +1028,7 @@ const TODO = (() => {
         extra = `<div class="tout"><span>${n === null ? "Log each message in the Outreach column below." : `<b>${n}</b> ${n === 1 ? "promoter" : "promoters"} logged in Outreach on this device this week. Log each message there so you can see who you've done.`}</span><button type="button" class="clear" data-golist>Go to the list</button></div>`;
       }
       if (d.field) extra += fieldHTML(tm, d.field, dis);
+      if (d.id === "fri") extra += sendHTML();
       return `<article class="tday st-${s}" aria-label="${esc(d.label)}: ${esc(stateLabel(d, s))}">
         <header><div><div class="tdl">${esc(d.label)}</div><div class="tdd">${esc(dateOf(d))}</div></div><span class="tpill">${esc(stateLabel(d, s))}</span></header>
         <p class="tbrief">${brief}</p>
@@ -1023,7 +1040,7 @@ const TODO = (() => {
         <div class="tpn"><b>${done}</b><span>of ${N} done</span></div>${segHTML(tm)}
         <div class="tleft">${left ? `${left} still to do` : "All done this week"}</div></div>
       <div class="tdays">${cards}</div>
-      <div class="tfn">Ticks and notes are saved in this browser only, so use the same phone or computer each time. Lauren can't see them here, so still send her your Friday summary.</div>`;
+      <div class="tfn">Ticks and notes are saved in this browser only, so use the same phone or computer each time. Lauren only sees them when you press Send to Lauren on Friday.</div>`;
   }
   function overviewHTML(){
     const cards = TEAMS.map(t => {
@@ -1091,6 +1108,105 @@ const TODO = (() => {
     render_();
   }
 
+  /* ---------- SEND-TO-LAUREN: gather this week's list into one report ---------- */
+  const FORM = {"url": "", "e": {}};   // Lauren's Friday check-in Google Form (prefill entry ids)
+  const LEADS = {Sydney:"Nina", Brisbane:"Lucy", Perth:"Grace", Adelaide:"Taylor", t1:"Bob", t2:"Ash", t3:"Daniel"};
+  function teamLabel(tm){
+    if (MULTI){ const n = String(tm).replace(/^t/, ""); const l = LEADS["t" + n]; return `${CITY} Team ${n}${l ? ` (${l})` : ""}`; }
+    const l = LEADS[CITY]; return `${CITY}${l ? ` (${l})` : ""}`;
+  }
+  const txt = (tm, item) => { const k = docKey(tm, TW, item); return String(k in tdrafts ? tdrafts[k] : ((TD[k] || {}).text || "")).trim(); };
+  function weekOutreach(){
+    const end = addDays(TW, 7);
+    return P.map(p => ({p, o: outreach[p.code]}))
+      .filter(({o}) => o && o.status && o.at && localDate(o.at) >= TW && localDate(o.at) < end)
+      .sort((a, b) => a.o.at.localeCompare(b.o.at));
+  }
+  const oneLine = s => String(s || "").replace(/\s+/g, " ").trim();
+  function outreachLines(){
+    return weekOutreach().map(({p, o}) => `- ${p.code}${p.name ? ` (${oneLine(p.name)})` : ""}: ${OUTL[o.status] || o.status}, ${dlong(localDate(o.at))}${o.note ? `. Note: ${oneLine(o.note)}` : ""}`);
+  }
+  function reportParts(tm){
+    const head = [
+      `DG team lead check-in: ${teamLabel(tm)}`,
+      `Week: Mon ${dshort(TW)} to Sun ${dshort(addDays(TW, 6))}`,
+      `To-do: ${doneCount(tm)} of ${N} done`,
+    ];
+    DAYS.forEach(d => d.items.forEach(([i, l]) => { const r = rec(tm, i); head.push(`${r && r.done ? "[x]" : "[ ]"} ${d.short}: ${l}${r && r.done ? ` (ticked ${dlong(localDate(r.at))})` : ""}`); }));
+    const focus = txt(tm, "focus"), shares = txt(tm, "shares"), summ = txt(tm, "summary");
+    head.push("", `This week's focus: ${focus || "not filled in"}`, `Who shared this week:${shares ? "\n" + shares : " not filled in"}`);
+    const out = outreachLines();
+    const outHead = `Promoters logged in Outreach this week: ${out.length}`;
+    const tail = summ ? ["", "Summary draft:", summ] : [];
+    return {head, outHead, out, tail};
+  }
+  function report(tm){
+    const r = reportParts(tm);
+    return [...r.head, "", r.outHead, ...r.out, ...r.tail].join("\n");
+  }
+  const MAXURL = 7000;
+  function formURL(tm){
+    if (!FORM.url) return "";
+    const E = FORM.e || {};
+    const base = [
+      [E.team, teamLabel(tm)],
+      [E.week, TW],
+      [E.focus, txt(tm, "focus")],
+      [E.share, isDone(tm, "t1") ? "Yes" : ""],
+      [E.shared, txt(tm, "shares")],
+      [E.messaged, String(weekOutreach().length)],
+      [E.went, txt(tm, "summary")],
+    ].filter(([k, v]) => k && v);
+    const q = kv => kv.map(([k, v]) => `entry.${k}=${encodeURIComponent(v)}`).join("&");
+    const url0 = `${FORM.url}?usp=pp_url&${q(base)}`;
+    if (!E.report) return url0;
+    const r = reportParts(tm);
+    let out = r.out.slice(), cut = 0, url = "";
+    for (;;){
+      const lines = [...r.head, "", r.outHead, ...out];
+      if (cut) lines.push(`(+${cut} more, too long for the form. Press Copy to send Lauren the full list.)`);
+      url = `${url0}&${q([[E.report, lines.join("\n")]])}`;
+      if (url.length <= MAXURL || !out.length) break;
+      out.pop(); cut++;
+    }
+    return url.length <= MAXURL ? url : url0;
+  }
+  let dlg = null;
+  function sendDialog(){
+    if (dlg) return dlg;
+    dlg = document.createElement("dialog");
+    dlg.className = "tsd"; dlg.setAttribute("aria-labelledby", "tsd-h");
+    document.body.appendChild(dlg);
+    dlg.addEventListener("click", async e => {
+      if (e.target === dlg || e.target.closest("[data-close]")){ dlg.close(); return; }
+      if (e.target.closest("[data-form]")){ toast("Press Submit in the form, then tick “Send Lauren your summary”."); return; }
+      if (e.target.closest("[data-copyrep]")){
+        const pre = dlg.querySelector(".tsd-pre"), v = pre ? pre.textContent : "";
+        try { await navigator.clipboard.writeText(v); toast("Copied. Paste it into your message to Lauren."); }
+        catch { const rg = document.createRange(); rg.selectNodeContents(pre); const s = getSelection(); s.removeAllRanges(); s.addRange(rg); toast("Selected. Copy it, then paste it to Lauren."); }
+      }
+    });
+    return dlg;
+  }
+  function openSend(tm){
+    const d = sendDialog();
+    const url = formURL(tm);
+    const wk = `Mon ${dshort(TW)} to Sun ${dshort(addDays(TW, 6))}`;
+    d.innerHTML = `<div class="tsd-in">
+      <header><h2 id="tsd-h">Send to Lauren</h2><button type="button" class="twb" data-close aria-label="Close">&times;</button></header>
+      <p class="tsd-p">${url
+        ? `Everything on your list for ${esc(wk)} goes into Lauren's check-in form. Open it, answer her Friday questions, then press <b>Submit</b>.`
+        : `Everything on your list for ${esc(wk)}. Copy it and send it to Lauren.`}</p>
+      <pre class="tsd-pre">${esc(report(tm))}</pre>
+      <div class="tsd-act">${url ? `<a class="btn" href="${esc(url)}" target="_blank" rel="noopener" data-form>Open check-in form</a>` : ""}<button type="button" class="tsd-sec" data-copyrep>Copy${url ? " instead" : ""}</button></div>
+      <p class="tsd-fn">Your ticks and notes stay on this device. Lauren only sees what you send her.</p>
+    </div>`;
+    if (typeof d.showModal === "function"){ if (!d.open) d.showModal(); } else d.setAttribute("open", "");
+  }
+  function sendHTML(){
+    return `<div class="tsend"><button type="button" class="btn" data-send>Send to Lauren</button><p>${FORM.url ? "Opens Lauren's check-in form with your ticks, focus, who shared and outreach filled in." : "Gathers your ticks, focus, who shared and outreach so you can send them to Lauren."}</p></div>`;
+  }
+
   /* ---------- events ---------- */
   const el = $("#todo");
   el.addEventListener("click", e => {
@@ -1098,6 +1214,7 @@ const TODO = (() => {
     if (w){ const n = +w.dataset.wk; setWeek(n === 0 ? thisWeek() : addDays(TW, 7 * n)); return; }
     const t = e.target.closest("[data-team]");
     if (t && MULTI){ setTab(+t.dataset.team); return; }
+    if (e.target.closest("[data-send]")){ const tm = teamKey(); if (tm) openSend(tm); return; }
     if (e.target.closest("[data-golist]")) document.querySelector(".roster").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start"});
   });
   el.addEventListener("change", e => {
